@@ -6,7 +6,7 @@ if(!isset($_SESSION['nom']))
     header('Location: index.php');
     exit();
 }
-
+$_SESSION["ouvert"]=true;
        $nom=$_SESSION['nom'];
        $statut=$_SESSION['statut'];
 ?>
