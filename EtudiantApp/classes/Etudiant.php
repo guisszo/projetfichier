@@ -2,12 +2,12 @@
 
 abstract class Etudiant{
 
-    private $matricule;
-    private $nom;
-    private $prenom;
-    private $email;
-    private $phone;
-    private $datenais;
+    protected $matricule;
+    protected $nom;
+    protected $prenom;
+    protected $email;
+    protected $phone;
+    protected $datenais;
     function __construct($matricule, $nom,$prenom, $email, $phone, $datenais)
     {
         $this->matricule = $matricule;

@@ -4,6 +4,6 @@ class Autoloader{
         spl_autoload_register(array(__CLASS__,'autoload'));
     }
     static function autoload($class){
-        require $class . '.php';
+        include '../classes/'.$class . '.php';
     }
 }

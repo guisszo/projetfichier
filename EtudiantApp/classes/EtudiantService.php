@@ -67,18 +67,15 @@ class EtudiantService
         $pdostat->bindParam(':email', $email);
         $pdostat->bindParam(':phone', $phone);
         $pdostat->bindParam(':datenais', $datenais);
-
-
         $donnees = $pdostat->execute();
-        //return $donnees;
-        //$id_etudiant = $etudiant->GetMatricule($matricule);
+        
         $stat = $this->getPDO()->query("SELECT id_etudiant FROM etudiant WHERE matricule= '$matricule'");
         $donnees = $stat->fetchAll(PDO::FETCH_OBJ);
         foreach ($donnees as $donne) {
             $id_etudiant = $donne->id_etudiant;
         }
-        echo $id_etudiant;
-        if (get_class($etudiant) == 'Boursier') {
+        //echo $id_etudiant;
+        if (get_class($etudiant) == 'Boursier' || get_class($etudiant) == 'Loger' ) {
             // var_dump($this->etudiant);
             $id_type = $etudiant->getType();
             $pdo = $this->getPDO();
@@ -89,31 +86,23 @@ class EtudiantService
             $pdostat->bindParam(':id_type', $id_type);
             $donnees = $pdostat->execute();
             //var_dump($donnees);
-
+            if(get_class($etudiant) == 'Loger'){
+    
+                $num_chambre = $etudiant->getNumChambre();
+                $pdo = $this->getPDO();
+    
+                $pdostat = $pdo->prepare('INSERT INTO loger (id_etudiant,id_chambre) 
+                VALUES(:id_etudiant,:id_chambre)');
+                
+                $pdostat->bindParam(':id_etudiant', $id_etudiant);
+                $pdostat->bindParam(':id_chambre', $num_chambre);
+                //die(var_dump($num_chambre,$id_etudiant));
+                
+                $donnees = $pdostat->execute();
+    
+            }
            // return $donnees;
-        }elseif(get_class($etudiant) == 'Loger'){
-            $id_type = $etudiant->getType();
-            $pdo = $this->getPDO();
-            $pdostat = $pdo->prepare('INSERT INTO boursier (id_etudiant,id_type) 
-            VALUES(:id_etudiant,:id_type)');
-
-            $pdostat->bindParam(':id_etudiant', $id_etudiant);
-            $pdostat->bindParam(':id_type', $id_type);
-            $donnees = $pdostat->execute();
-
-            $num_chambre = $etudiant->getNumChambre();
-            $pdo = $this->getPDO();
-
-            $pdostat = $pdo->prepare('INSERT INTO loger (id_etudiant,id_chambre) 
-            VALUES(:id_etudiant,:id_chambre)');
-            
-            $pdostat->bindParam(':id_etudiant', $id_etudiant);
-            $pdostat->bindParam(':id_chambre', $num_chambre);
-            //die(var_dump($num_chambre,$id_etudiant));
-            
-            $donnees = $pdostat->execute();
-
-        } elseif (get_class($etudiant) == 'NonBoursier') {
+        }elseif (get_class($etudiant) == 'NonBoursier') {
             $adresse = $etudiant->getAdresse();
             $pdo = $this->getPDO();
             $pdostat = $pdo->prepare('INSERT INTO nonBoursier (id_etudiant,adresse) 
@@ -146,7 +135,12 @@ class EtudiantService
 
     }
 
+   public function supprimerEtu($id)
+   {
+       $pdo=$this->getPDO()->prepare("DELETE FROM etudiant WHERE id_etudiant=$id");
+     $pdo->execute(array($id));
+     return;
+   }
 
-    public function checkStatut()
-    { }
+   
 }
